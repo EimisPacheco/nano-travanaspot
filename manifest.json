@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "TravanaSpot - Little Airby Review Analysis",
+  "version": "1.0",
+  "description": "Little Airby analyzes Airbnb reviews with a warm touch! Get insights, pros/cons, and sentiment from up to 100 reviews.",
+  "minimum_chrome_version": "116",
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "content_scripts": [
+    {
+      "js": ["content-script.js"],
+      "matches": ["https://www.airbnb.com/rooms/*", "file://*/*", "http://localhost/*"],
+      "run_at": "document_end"
+    }
+  ],
+  "permissions": ["sidePanel", "activeTab", "tabs"],
+  "host_permissions": [
+    "https://api.resend.com/*"
+  ],
+  "web_accessible_resources": [
+    {
+              "resources": ["inject-map-modifier.js", "browser-ai-integration.js"],
+      "matches": ["https://www.airbnb.com/*", "file://*/*", "http://localhost/*"]
+    }
+  ],
+  "icons": {
+    "16": "images/icon-16.png",
+    "48": "images/icon-48.png",
+    "128": "images/icon-128.png"
+  }
+} 

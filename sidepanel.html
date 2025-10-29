@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TravanaSpot - Little Airby Review Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .header h1 {
+            color: #ff385c;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .data-section {
+            margin-bottom: 20px;
+        }
+
+        .data-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .data-item:last-child {
+            border-bottom: none;
+        }
+
+        .data-label {
+            font-weight: 600;
+            color: #555;
+            min-width: 80px;
+            font-size: 14px;
+        }
+
+        .data-value {
+            flex: 1;
+            color: #333;
+            font-size: 14px;
+            word-break: break-word;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stars {
+            color: #ff385c;
+            font-size: 16px;
+        }
+
+        .price {
+            color: #ff385c;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .title {
+            font-weight: 600;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+
+        .location {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .capacity-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .capacity-item {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 12px;
+            color: #555;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            padding: 40px 20px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            padding: 30px 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin: 10px 0;
+            border: 1px solid #e9ecef;
+        }
+
+        .spinner {
+            border: 4px solid #e3f2fd;
+            border-top: 4px solid #2196f3;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #c33;
+            margin-bottom: 16px;
+        }
+
+        .success {
+            background: #efe;
+            color: #363;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #363;
+            margin-bottom: 16px;
+        }
+        
+        .map-btn {
+            background: #ff385c;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin: 4px;
+            transition: background-color 0.2s;
+        }
+        
+        .map-btn:hover {
+            background: #e31c5f;
+        }
+        
+        .map-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .reviews-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .reviews-header {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 16px;
+            font-size: 16px;
+        }
+        
+        .review-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid #ff385c;
+        }
+        
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .reviewer-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .review-date {
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .review-text {
+            color: #555;
+            font-size: 13px;
+            line-height: 1.4;
+            margin-top: 8px;
+        }
+        
+        .review-location {
+            color: #666;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        
+        .review-rating {
+            color: #ff385c;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        
+        .no-reviews {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            padding: 20px;
+        }
+        
+        
+        /* AI Analysis Controls */
+        .ai-section {
+            margin: 20px 0;
+            padding: 16px;
+            background: #f0f8ff;
+            border-radius: 12px;
+            border: 2px solid #e6f3ff;
+        }
+        
+        .ai-header {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 12px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .ai-controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .ai-btn {
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .ai-btn:hover {
+            background: #5f4dd0;
+        }
+        
+        .ai-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .ai-btn.analyzing {
+            background: #fd79a8;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .ai-analysis {
+            margin-top: 12px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        
+        .ai-question-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ff385c;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-top: 12px;
+            transition: all 0.3s ease;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(255, 56, 92, 0.1);
+        }
+        
+        .ai-question-input:focus {
+            outline: none;
+            border-color: #e31c5f;
+            box-shadow: 0 2px 12px rgba(255, 56, 92, 0.2);
+        }
+        
+        .ai-question-input::placeholder {
+            color: #999;
+        }
+
+        /* Comprehensive Analysis Styles */
+        .comprehensive-analysis {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .analysis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .analysis-header h3 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .trust-score {
+            background: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+
+        .trust-label {
+            color: #6c757d;
+            margin-right: 5px;
+        }
+
+        .trust-value {
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .summary-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #007bff;
+        }
+
+        .summary-box p {
+            margin: 0;
+            color: #495057;
+            line-height: 1.5;
+        }
+
+        .sentiment-section {
+            margin-bottom: 20px;
+        }
+
+        .sentiment-section h4 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .sentiment-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sentiment-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+        }
+
+        .sentiment-icon {
+            width: 20px;
+            text-align: center;
+        }
+
+        .sentiment-label {
+            width: 60px;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-fill.positive {
+            background: #28a745;
+        }
+
+        .progress-fill.neutral {
+            background: #6c757d;
+        }
+
+        .progress-fill.negative {
+            background: #dc3545;
+        }
+
+        .sentiment-percentage {
+            width: 35px;
+            text-align: right;
+            font-weight: bold;
+        }
+
+        .keyword-section {
+            margin-bottom: 20px;
+        }
+
+        .keyword-section h4 {
+            margin: 0 0 5px 0;
+            color: #2c3e50;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .section-subtitle {
+            margin: 0 0 15px 0;
+            color: #6c757d;
+            font-size: 11px;
+            font-style: italic;
+        }
+
+        .keyword-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .keyword-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .keyword-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .keyword-name {
+            font-weight: 600;
+            color: #2c3e50;
+            text-transform: capitalize;
+        }
+
+        .keyword-stats {
+            font-size: 11px;
+        }
+
+        .positive-count {
+            color: #28a745;
+            margin-right: 8px;
+        }
+
+        .negative-count {
+            color: #dc3545;
+        }
+
+        .snippets {
+            margin-top: 8px;
+            font-size: 11px;
+        }
+
+        .snippet {
+            background: #f8f9fa;
+            padding: 4px 8px;
+            margin: 4px 0;
+            border-radius: 4px;
+            border-left: 3px solid #007bff;
+            font-style: italic;
+        }
+
+        .clickable-snippet {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .clickable-snippet:hover {
+            background: #e3f2fd;
+            border-left-color: #2196f3;
+            transform: translateX(2px);
+        }
+
+        .clickable-snippet:active {
+            transform: translateX(1px);
+        }
+
+        .snippet-hint {
+            display: block;
+            font-size: 10px;
+            color: #666;
+            font-style: normal;
+            margin-top: 2px;
+            opacity: 0.7;
+        }
+
+        .clickable-snippet:hover .snippet-hint {
+            opacity: 1;
+            color: #2196f3;
+        }
+
+        .highlighted-review {
+            background: #fff3cd !important;
+            border: 2px solid #ffc107 !important;
+            animation: highlight-pulse 2s ease-in-out;
+        }
+
+        @keyframes highlight-pulse {
+            0%, 100% { background: #fff3cd; }
+            50% { background: #ffeaa7; }
+        }
+
+        .pros-cons-section {
+            margin-bottom: 20px;
+        }
+
+        .pros-cons-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .pros-column h4,
+        .cons-column h4 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .pros-column h4 {
+            color: #28a745;
+        }
+
+        .cons-column h4 {
+            color: #dc3545;
+        }
+
+        .pros-list,
+        .cons-list {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .pros-list li {
+            color: #28a745;
+            margin-bottom: 4px;
+        }
+
+        .cons-list li {
+            color: #dc3545;
+            margin-bottom: 4px;
+        }
+
+        .insights-section {
+            margin-bottom: 20px;
+        }
+
+        .insights-section h4 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .insight-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 10px;
+        }
+
+        .insight-card h5 {
+            margin: 0 0 8px 0;
+            font-size: 12px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .insight-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .tag {
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .tag.positive {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .tag.negative {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .tag.feature {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .tag.improvement {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .analysis-info {
+            text-align: center;
+            padding-top: 15px;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+            font-size: 10px;
+        }
+        
+        /* Q&A Container Styles */
+        #qa-container {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .qa-response {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        
+        #qa-container .loading {
+            margin: 0;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+        }
+        
+        #qa-container h3 {
+            margin: 0 0 20px 0;
+            color: #2c3e50;
+            font-size: 18px;
+            font-weight: 600;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏠 TravanaSpot</h1>
+            <p>Your friendly Little Airby is here to help!</p>
+            <button id="refresh-reviews-btn" class="map-btn" style="font-size: 0.8em;">🔄 Refresh Reviews</button>
+        </div>
+
+
+
+        <!-- Listing Information Section -->
+        <div id="content">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Little Airby is getting ready to help you...</p>
+            </div>
+        </div>
+
+        <!-- Little Airby Analysis Section -->
+        <div class="ai-section">
+            <div class="ai-header">
+                🧸 Little Airby Review Analysis
+            </div>
+            <div class="ai-controls">
+                <button id="ai-question-btn" class="ai-btn">
+                    💬 Chat with Little Airby
+                </button>
+                <button id="email-analysis-btn" class="ai-btn" style="background: #17a2b8;">
+                    📧 Email Analysis
+                </button>
+                <button id="clear-qa-btn" class="ai-btn" style="background: #6c757d; display: none;">
+                    🗑️ Clear Q&A
+                </button>
+            </div>
+            <input type="text" id="ai-question-input" class="ai-question-input" placeholder="Hi there! Ask me anything about these reviews... I'm here to help! 😊" style="display: none;">
+            <div id="email-input-container" style="display: none; margin-top: 12px;">
+                <input type="email" id="email-input" class="ai-question-input" placeholder="Enter your email address to receive the analysis..." style="display: block;">
+                <div style="display: flex; gap: 8px; margin-top: 8px;">
+                    <button id="send-email-btn" class="ai-btn" style="background: #28a745; font-size: 12px; padding: 6px 12px;">
+                        ✉️ Send
+                    </button>
+                    <button id="cancel-email-btn" class="ai-btn" style="background: #6c757d; font-size: 12px; padding: 6px 12px;">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+            <div class="ai-analysis" id="ai-analysis" style="display: none;">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Little Airby is reading the reviews...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guest Reviews Section -->
+        <div id="reviews-container">
+            <!-- Reviews will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script src="email-template-exact.js"></script>
+    <script src="email-sender.js"></script>
+    <script src="browser-ai-integration.js"></script>
+    <script src="sidepanel.js"></script>
+</body>
+</html> 
